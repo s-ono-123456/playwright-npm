@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+       <%- include('../partials/head'); %>
+   </head>
+   <body class="container">
+ 
+   <header>
+       <%- include('../partials/header'); %>
+   </header>
+ 
+   <main>
+        <div class="container" style="display: flex;">
+            <h1 style="color:black">Web Application EJS + Express</h1><br />
+        </div>
+        
+        <div style="display: flex;  height: 50vh">
+            <form action="/" method="post">
+                <input type="text" name="user_name">
+                <input type="submit" value="投稿">
+            </form>
+
+            <%# 実際に投稿された内容を表示 %>
+            <ul>
+                <% for (var i = 0; i < posts.length; i++) { %>
+                    <li><%= posts[i] %></li>
+                <% } %>
+            </ul>
+        </div>
+   </main>
+ 
+   <footer>
+       <%- include('../partials/footer'); %>
+   </footer>
+ 
+   </body>
+</html>

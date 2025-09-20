@@ -37,3 +37,16 @@ Node.js のインストール方法については、[公式サイト](https://n
     ```bash
     npx playwright show-report
     ```
+
+## サンプルアプリの起動
+1. サンプルアプリは以下コマンドで起動します。
+
+    ```bash
+    node sample-app/app.js
+    ```
+
+2. 以下URLにアクセスします。
+
+    ```bash
+    localhost:8082
+    ```
