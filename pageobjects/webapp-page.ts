@@ -51,11 +51,11 @@ export class WebAppPage {
     // メイン領域
     this.heading = page.locator('h1', { hasText: 'Web Application EJS + Express' });
     // スナップショットでは「textbox」とあるため input または textarea を想定
-    this.input = page.locator('input[type="text"], textarea, input'); 
-    this.submitButton = page.locator('button', { hasText: '投稿' });
+    this.input = page.locator('input[type="text"], textarea, input').first(); 
+    this.submitButton = page.locator('input[type="submit"]', { hasText: '投稿' }).first();
 
     // 投稿一覧（list）: 汎用的に main 内の list を指すセレクタ
-    this.entriesList = page.locator('main ul, main .list, article ul, ul');
+    this.entriesList = page.locator('li');
 
     // フッターの著作権文
     this.footer = page.locator('footer, [role="contentinfo"], .footer, footer p');
@@ -101,15 +101,12 @@ export class WebAppPage {
 
   // 入力欄に文字を入力する（既存のテキストをクリアしてから入力）
   async fillInput(text: string) {
-    await this.input.first().fill(text);
+    await this.input.fill(text);
   }
 
   // 投稿ボタンを押す。text を渡すと先に入力してから送信する
-  async submit(text?: string) {
-    if (text !== undefined) {
-      await this.fillInput(text);
-    }
-    await this.submitButton.first().click();
+  async submit() {
+    await this.submitButton.click();
     // サーバサイドで処理されて一覧に追加される想定のため、一覧が表示されることを待つ
     await expect(this.entriesList.first()).toBeVisible();
   }
@@ -121,7 +118,7 @@ export class WebAppPage {
 
   // 投稿一覧の項目数を返す（テストのアサーションに利用）
   async getEntriesCount(): Promise<number> {
-    return await this.entriesList.first().locator('li').count();
+    return await this.entriesList.count();
   }
 
   // 現在ページの URL を返す（補助）

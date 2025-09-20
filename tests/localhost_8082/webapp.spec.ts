@@ -16,12 +16,44 @@ test.describe('Localhost:8082 - Web App (EJS + Express)', () => {
     expect(footerText?.toLowerCase()).toContain('copyright');
   });
 
-  test('TC-002 ナビゲーションリンクの存在と遷移先確認', async ({ page }) => {
+  test('TC-002 ナビゲーションリンクの存在と遷移先確認_Home', async ({ page }) => {
     const app = new WebAppPage(page);
     await app.goto();
 
-    app.gotoHome();
+    await app.gotoHome();
     await expect(page).toHaveURL(/\/$/);
+  });
+
+  test('TC-002 ナビゲーションリンクの存在と遷移先確認_About', async ({ page }) => {
+    const app = new WebAppPage(page);
+    await app.goto();
+
+    await app.gotoAbout();
+    await expect(page).toHaveURL(/\/about$/);
+  });
+
+  test('TC-002 ナビゲーションリンクの存在と遷移先確認_Services', async ({ page }) => {
+    const app = new WebAppPage(page);
+    await app.goto();
+
+    await app.gotoServices();
+    await expect(page).toHaveURL(/\/services$/);
+  });
+
+  test('TC-002 ナビゲーションリンクの存在と遷移先確認_Portfolio', async ({ page }) => {
+    const app = new WebAppPage(page);
+    await app.goto();
+
+    await app.gotoPortfolio();
+    await expect(page).toHaveURL(/\/portfolio$/);
+  });
+
+  test('TC-002 ナビゲーションリンクの存在と遷移先確認_Contact', async ({ page }) => {
+    const app = new WebAppPage(page);
+    await app.goto();
+
+    await app.gotoContact();
+    await expect(page).toHaveURL(/\/contact$/);
   });
 
   test('TC-003 投稿（新規エントリ）機能 — 正常系', async ({ page }) => {
@@ -33,7 +65,8 @@ test.describe('Localhost:8082 - Web App (EJS + Express)', () => {
 
     // 投稿実行
     const content = 'テスト投稿';
-    await app.submit(content);
+    await app.fillInput(content);
+    await app.submit();
 
     // 投稿されたテキストが存在すること
     const posted = page.getByText(content).first();
@@ -41,7 +74,7 @@ test.describe('Localhost:8082 - Web App (EJS + Express)', () => {
 
     // 項目数が増えていること（実装によってはサーバ側永続化の影響で数え方が変わる点に注意）
     const after = await app.getEntriesCount();
-    expect(after).toBeGreaterThanOrEqual(before + 1);
+    await expect(after).toBeGreaterThanOrEqual(before + 1);
   });
 
   test('TC-004 投稿ボタンの非破壊性（空入力）', async ({ page }) => {
@@ -50,12 +83,12 @@ test.describe('Localhost:8082 - Web App (EJS + Express)', () => {
 
     // 空入力で投稿を試みる（実装依存のため、UIが壊れないことを確認）
     const before = await app.getEntriesCount();
-    await app.submit(''); // 空文字を送る
+    await app.submit(); // 空文字を送る
     // ページがクラッシュしていないこと、見出しが見えることを確認
     await app.assertLoaded();
     const after = await app.getEntriesCount();
     // 空入力が追加される仕様でない限り、件数は増えないことを期待（実装依存）
-    expect(after).toBeGreaterThanOrEqual(before);
+    await expect(after).toBeGreaterThanOrEqual(before);
   });
 
   test('TC-005 見出しのセマンティック確認', async ({ page }) => {
