@@ -6,6 +6,7 @@ var config = require('./config');
 
 // ビューエンジンをejsにセットする
 app.set('view engine', 'ejs');
+app.use("/sample-app", express.static('sample-app'));
 var posts = [];
 
 // indexのテンプレートを呼び出す
