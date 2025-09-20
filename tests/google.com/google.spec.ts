@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { GoogleComPage } from '../../pageobject/google-com-page';
+import { GoogleComPage } from '../../pageobjects/google-com-page';
 
 test.describe('Google.com - 検索機能', () => {
   test('テキストボックスに「Google」と入力してGoogle検索する', async ({ page }) => {
