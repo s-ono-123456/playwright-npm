@@ -2,10 +2,23 @@ import { test, expect } from '@playwright/test';
 import { WebAppPage } from '../../pageobjects/webapp-page';
 
 test.describe('Localhost:8082 - Web App (EJS + Express)', () => {
-  test('TC-001 ページの表示確認', async ({ page }) => {
-    const app = new WebAppPage(page);
-    await app.goto();
 
+  let app: WebAppPage;
+  let consoleErrors: string[] = [];
+
+  test.beforeEach(async ({ page }) => {
+    app = new WebAppPage(page);
+    consoleErrors = [];
+    // ページの console.error を収集
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        consoleErrors.push(msg.text());
+      }
+    });
+    await app.goto();
+  });
+
+  test('TC-001 ページの表示確認', async ({ page }) => {
     // タイトル確認
     await expect(page).toHaveTitle('Web App with EJS + Express');
 
@@ -17,49 +30,34 @@ test.describe('Localhost:8082 - Web App (EJS + Express)', () => {
   });
 
   test('TC-002 ナビゲーションリンクの存在と遷移先確認_Home', async ({ page }) => {
-    const app = new WebAppPage(page);
-    await app.goto();
-
     await app.gotoHome();
     await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveScreenshot('GoToHome.png',
+      { maxDiffPixelRatio: 0.05 , mask: [app.entriesList] } // ナビゲーション部分はマスクする
+    );
   });
 
   test('TC-002 ナビゲーションリンクの存在と遷移先確認_About', async ({ page }) => {
-    const app = new WebAppPage(page);
-    await app.goto();
-
     await app.gotoAbout();
     await expect(page).toHaveURL(/\/about$/);
   });
 
   test('TC-002 ナビゲーションリンクの存在と遷移先確認_Services', async ({ page }) => {
-    const app = new WebAppPage(page);
-    await app.goto();
-
     await app.gotoServices();
     await expect(page).toHaveURL(/\/services$/);
   });
 
   test('TC-002 ナビゲーションリンクの存在と遷移先確認_Portfolio', async ({ page }) => {
-    const app = new WebAppPage(page);
-    await app.goto();
-
     await app.gotoPortfolio();
     await expect(page).toHaveURL(/\/portfolio$/);
   });
 
   test('TC-002 ナビゲーションリンクの存在と遷移先確認_Contact', async ({ page }) => {
-    const app = new WebAppPage(page);
-    await app.goto();
-
     await app.gotoContact();
     await expect(page).toHaveURL(/\/contact$/);
   });
 
   test('TC-003 投稿（新規エントリ）機能 — 正常系', async ({ page }) => {
-    const app = new WebAppPage(page);
-    await app.goto();
-
     // 投稿前の項目数
     const before = await app.getEntriesCount();
 
@@ -78,9 +76,6 @@ test.describe('Localhost:8082 - Web App (EJS + Express)', () => {
   });
 
   test('TC-004 投稿ボタンの非破壊性（空入力）', async ({ page }) => {
-    const app = new WebAppPage(page);
-    await app.goto();
-
     // 空入力で投稿を試みる（実装依存のため、UIが壊れないことを確認）
     const before = await app.getEntriesCount();
     await app.submit(); // 空文字を送る
@@ -92,24 +87,12 @@ test.describe('Localhost:8082 - Web App (EJS + Express)', () => {
   });
 
   test('TC-005 見出しのセマンティック確認', async ({ page }) => {
-    const app = new WebAppPage(page);
-    await app.goto();
-
     // h1 が正しいテキストで存在すること
     const h1 = page.locator('h1', { hasText: 'Web Application EJS + Express' }).first();
     await expect(h1).toBeVisible();
   });
 
   test('TC-006 リソース読み込みエラーの検出', async ({ page }) => {
-    const app = new WebAppPage(page);
-    const consoleErrors: string[] = [];
-    page.on('console', (msg) => {
-      if (msg.type() === 'error') {
-        consoleErrors.push(msg.text());
-      }
-    });
-
-    await app.goto();
     // 少し待ってリソース読み込みが落ち着くのを待つ
     await page.waitForTimeout(500);
 
